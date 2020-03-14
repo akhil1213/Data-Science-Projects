@@ -120,9 +120,26 @@ for key in bigram_model:
     value = bigram_model[key]
     total_sum += value/total_number_of_bigrams
     bigram_model[key] = value/total_number_of_bigrams
-print(total_sum)
+print(total_sum)#should equal 1
 # print(bigram_model)
+
+
+#add one smoothing
 bigram_model_add1_smoothing = {}
+# total_number_of_bigrams = total_number_of_bigrams*2
+total_sum = 0
+count = 0
+for key in bigram_model:
+    count +=1
+    if count == 50: 
+        break
+    value = bigram_model[key]
+    print(key)
+    bigram_model_add1_smoothing[key] = ((value*total_number_of_bigrams) + 1)/(2*total_number_of_bigrams)
+    print(value*total_number_of_bigrams)
+    print(2*total_number_of_bigrams)
+    total_sum += bigram_model_add1_smoothing[key]
+print(total_sum)
 
 
 
