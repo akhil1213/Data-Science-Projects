@@ -67,10 +67,12 @@ print("The total words in the training corpus including <s> and </s> is " + str(
 print("total number of unique words in the training set is including <s> and </s> is" + str(len(count_of_words)))
 
 tokenized_training_unk = ""#this is the training set with unk
+count_of_words['<unk>'] = 0
 for word in tokenized_training:
     if count_of_words[word] == 1:
         tokenized_training_unk += '<unk> '
         count_of_words[word] = 0
+        count_of_words['<unk>'] = count_of_words['<unk>']+1
     else:
         tokenized_training_unk += word + " "
 
@@ -113,51 +115,84 @@ print("the sum of all the unigram prob is close to 1 so its working it is" + str
 
 
 ##########bigram models
-bigram_model = {}
+counts_of_bigram = {}
 total_number_of_bigrams = 0
 tokenized_training_unk_splitted = tokenized_training_unk.split()
+sum_of_all_counts_with_a_word_before_it = {}
 for i in range(len(tokenized_training_unk_splitted)-1):
     bigram_key = tokenized_training_unk_splitted[i] + "," + tokenized_training_unk_splitted[i+1]
-    if bigram_model.get(bigram_key) == None:
-        bigram_model[bigram_key] = 1
+
+    #count num of bigrams
+    if counts_of_bigram.get(bigram_key) == None:
+        counts_of_bigram[bigram_key] = 1
     else:
-        bigram_model[bigram_key] = bigram_model[bigram_key] + 1
+        counts_of_bigram[bigram_key] = counts_of_bigram[bigram_key] + 1
     total_number_of_bigrams+=1
 
+count = 0
+for key in counts_of_bigram:
+    print (key + str(counts_of_bigram[key]))
+    count+=1
+    if count == 20:
+        break
+
+########################## implementing this formula
+# count(prevword,currentword)/sum(count(prevword,ANYWORDAFTERIT))
+bigram_model_maximum = {}
+for i in range(len(tokenized_training_unk_splitted)-1):
+    bigram_key = tokenized_training_unk_splitted[i] + "," + tokenized_training_unk_splitted[i+1]
+    numerator = counts_of_bigram[bigram_key]
+    denom = count_of_words[tokenized_training_unk_splitted[i]]
+    bigram_model_maximum[bigram_key] = numerator/denom
+    # sumOfAllCountsWithPreviousWordAndAnyWordAfterIt=0
+    # for j in range(len(tokenized_training_unk_splitted)-1):
+    #     key = tokenized_training_unk_splitted[j]
+    #     if key.find(',',1) != -1:
+    #         if key[0:key.find(',',1)] == tokenized_training_unk_splitted[i]:
+    #         sumOfAllCountsWithPreviousWordAndAnyWordAfterIt+=1
+    # if sumOfAllCountsWithPreviousWordAndAnyWordAfterIt!=0:
+    #     bigram_model_maximum[bigram_key] = numerator/sumOfAllCountsWithPreviousWordAndAnyWordAfterIt
+
+count = 0
+for key in bigram_model_maximum:
+    print ('akhil' + key + ' ' + str(bigram_model_maximum[key]))
+    count+=1
+    if count == 20:
+        break
 
 
 
 
 # print(total_number_of_bigrams)
-total_sum=0
-count=0
-for key in bigram_model:
-    value = bigram_model[key]
-    total_sum += value/total_number_of_bigrams
-    bigram_model[key] = value/total_number_of_bigrams
-    if count == 15:
-        break
-    count+=1
-    print(str(key) + str(bigram_model[key]))
-print(total_sum)#should equal 1
-# print(bigram_model)
+# total_sum=0
+# count=0
+# for key in counts_of_bigram:
+#     value = counts_of_bigram[key]
+#     total_sum += value/total_number_of_bigrams
+#     counts_of_bigram[key] = value/total_number_of_bigrams
+#     if count == 15:
+#         break
+#     count+=1
+#     print(str(key) + str(counts_of_bigram[key]))
+# print(total_sum)#should equal 1
+# print(counts_of_bigram)
 
 
 # #add one smoothing
-# bigram_model_add1_smoothing = {}
+# counts_of_bigram_add1_smoothing = {}
 # # total_number_of_bigrams = total_number_of_bigrams*2
 # total_sum = 0
 # count = 0
-# for key in bigram_model:
+# for key in counts_of_bigram:
 #     # count +=1
 #     # if count == 50: 
 #     #     break
-#     value = bigram_model[key]
+#     value = counts_of_bigram[key]
 #     print(key)
-#     bigram_model_add1_smoothing[key] = ((value*total_number_of_bigrams) + 1)/(2*total_number_of_bigrams)
+#     counts_of_bigram_add1_smoothing[key] = ((value*total_number_of_bigrams) + 1)/(2*total_number_of_bigrams)
 #     print(value*total_number_of_bigrams)
 #     print(2*total_number_of_bigrams)
-#     total_sum += bigram_model_add1_smoothing[key]
+#     total_sum += counts_of_bigram_add1_smoothing[key]
 # print(total_sum)
 
 
