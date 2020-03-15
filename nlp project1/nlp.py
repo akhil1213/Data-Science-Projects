@@ -103,6 +103,15 @@ print("the percentage of word tokens and word types in the test corpus that did 
       str((total_number_of_unks/total_number_of_words)*100) + '%')
 
       ################ unigram omdels
+
+unigram_model = {}
+sum_of_all_unigram_prob = 0
+for word in count_of_words:
+    unigram_model[word] = count_of_words[word]/total_words_in_training_corpus
+    sum_of_all_unigram_prob+=unigram_model[word]
+print("the sum of all the unigram prob is close to 1 so its working it is" + str(sum_of_all_unigram_prob))
+
+
 ##########bigram models
 bigram_model = {}
 total_number_of_bigrams = 0
@@ -114,32 +123,42 @@ for i in range(len(tokenized_training_unk_splitted)-1):
     else:
         bigram_model[bigram_key] = bigram_model[bigram_key] + 1
     total_number_of_bigrams+=1
-total_sum=0
+
+
+
+
+
 # print(total_number_of_bigrams)
+total_sum=0
+count=0
 for key in bigram_model:
     value = bigram_model[key]
     total_sum += value/total_number_of_bigrams
     bigram_model[key] = value/total_number_of_bigrams
+    if count == 15:
+        break
+    count+=1
+    print(str(key) + str(bigram_model[key]))
 print(total_sum)#should equal 1
 # print(bigram_model)
 
 
-#add one smoothing
-bigram_model_add1_smoothing = {}
-# total_number_of_bigrams = total_number_of_bigrams*2
-total_sum = 0
-count = 0
-for key in bigram_model:
-    count +=1
-    if count == 50: 
-        break
-    value = bigram_model[key]
-    print(key)
-    bigram_model_add1_smoothing[key] = ((value*total_number_of_bigrams) + 1)/(2*total_number_of_bigrams)
-    print(value*total_number_of_bigrams)
-    print(2*total_number_of_bigrams)
-    total_sum += bigram_model_add1_smoothing[key]
-print(total_sum)
+# #add one smoothing
+# bigram_model_add1_smoothing = {}
+# # total_number_of_bigrams = total_number_of_bigrams*2
+# total_sum = 0
+# count = 0
+# for key in bigram_model:
+#     # count +=1
+#     # if count == 50: 
+#     #     break
+#     value = bigram_model[key]
+#     print(key)
+#     bigram_model_add1_smoothing[key] = ((value*total_number_of_bigrams) + 1)/(2*total_number_of_bigrams)
+#     print(value*total_number_of_bigrams)
+#     print(2*total_number_of_bigrams)
+#     total_sum += bigram_model_add1_smoothing[key]
+# print(total_sum)
 
 
 
