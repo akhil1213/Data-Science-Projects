@@ -223,6 +223,7 @@ sentence_tokenized = sentence_to_predict.split()
 uni_probability=1
 calculations=""
 parameters_0 = []
+##log probability for unigram model
 for word in sentence_tokenized:
     if unigram_model.get(word) != None:
         uni_probability*=unigram_model[word]
@@ -247,8 +248,24 @@ for i in range(len(sentence_tokenized)-1):
     else:
         parameters_1.append(bigram)
 print(calculations + ' = log(' +str(bigram_probability) + ")")
-print("the log probabilty based on the unigram model is: " + str(math.log(bigram_probability,2)))
+print("the log probabilty based on the bigram model is: " + str(math.log(bigram_probability,2)))
 print("the parameters for bigram with 0 probability are below:")
+print(parameters_0)
+
+
+###log probability for bigram smoothing model
+parameters_2=[]
+bigram_smoothing_probability=1
+for i in range(len(sentence_tokenized)-1):
+    bigram = sentence_tokenized[i] + "," + sentence_tokenized[i+1]
+    if bigram_model_maximum_smoothing.get(bigram) != None:
+        bigram_smoothing_probability*=bigram_model_maximum_smoothing[bigram]
+        calculations+=str(bigram_model_maximum_smoothing[bigram]) + ' * '
+    else:
+        parameters_1.append(bigram)
+print(calculations + ' = log(' +str(bigram_smoothing_probability) + ")")
+print("the log probabilty based on the bigram add one smoothing model is: " + str(math.log(bigram_smoothing_probability,2)))
+print("the parameters for bigram with add one smoothing with 0 probability are below:")
 print(parameters_0)
 
 
