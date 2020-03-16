@@ -119,6 +119,7 @@ counts_of_bigram = {}
 total_number_of_bigrams = 0
 tokenized_training_unk_splitted = tokenized_training_unk.split()
 sum_of_all_counts_with_a_word_before_it = {}
+###############code to count each unique bigram and how many times it appeared in the dataset
 for i in range(len(tokenized_training_unk_splitted)-1):
     bigram_key = tokenized_training_unk_splitted[i] + "," + tokenized_training_unk_splitted[i+1]
 
@@ -153,9 +154,27 @@ for i in range(len(tokenized_training_unk_splitted)-1):
     # if sumOfAllCountsWithPreviousWordAndAnyWordAfterIt!=0:
     #     bigram_model_maximum[bigram_key] = numerator/sumOfAllCountsWithPreviousWordAndAnyWordAfterIt
 
+bigram_model_maximum_smoothing = {}
+for i in range(len(tokenized_training_unk_splitted)-1):
+    bigram_key = tokenized_training_unk_splitted[i] + "," + tokenized_training_unk_splitted[i+1]
+    numerator = counts_of_bigram[bigram_key]
+    denom = count_of_words[tokenized_training_unk_splitted[i]]
+    numerator+=1
+    denom += 83045#which is the number of unique words in the training set 
+    bigram_model_maximum_smoothing[bigram_key] = numerator/denom
+
+
+
 count = 0
 for key in bigram_model_maximum:
-    print ('akhil' + key + ' ' + str(bigram_model_maximum[key]))
+    print ('bigram model without smoothing:' + key + ' ' + str(bigram_model_maximum[key]))
+    count+=1
+    if count == 20:
+        break
+
+count = 0
+for key in bigram_model_maximum_smoothing:
+    print ('with smoothing' + key + ' ' + str(bigram_model_maximum_smoothing[key]))
     count+=1
     if count == 20:
         break
