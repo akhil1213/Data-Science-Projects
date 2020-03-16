@@ -1,3 +1,4 @@
+import math
 file = open('train.txt','r')
 trained_text_without_padding = file.read()
 file = open('test.txt','r')
@@ -64,13 +65,14 @@ for word in tokenized_training:
     else:
         count_of_words[word] +=1
 print("The total words in the training corpus including <s> and </s> is " + str(total_words_in_training_corpus))
-print("total number of unique words in the training set is including <s> and </s> is" + str(len(count_of_words)))
+total_number_of_unique_words_in_training = len(count_of_words)
+print("total number of unique words in the training set is including <s> and </s> is" + str(total_number_of_unique_words_in_training))
 
 tokenized_training_unk = ""#this is the training set with unk
 count_of_words['<unk>'] = 0
 for word in tokenized_training:
     if count_of_words[word] == 1:
-        tokenized_training_unk += '<unk> '
+        tokenized_training_unk += ' <unk> '
         count_of_words[word] = 0
         count_of_words['<unk>'] = count_of_words['<unk>']+1
     else:
@@ -93,14 +95,13 @@ for word in test_text_splitted:
     #     word = word[0:len(word)-4]
     # if word != ',' and word != '\"':
     if word not in trained_text_splitted:
-        unk_replaced_test += '<unk>'
+        unk_replaced_test += ' <unk> '
         total_number_of_unks+=1
         continue
     unk_replaced_test += word + " "
-print('yick')
-# print(unk_replaced_test[0:500])
-print(total_number_of_words)
-print(total_number_of_unks)
+# print(unk_replaced_test)
+print("total number of words in test set is: " + str(total_number_of_words))
+print("total number of unks in test set is: " + str(total_number_of_unks))
 print("the percentage of word tokens and word types in the test corpus that did not occur in training is" + 
       str((total_number_of_unks/total_number_of_words)*100) + '%')
 
@@ -130,12 +131,12 @@ for i in range(len(tokenized_training_unk_splitted)-1):
         counts_of_bigram[bigram_key] = counts_of_bigram[bigram_key] + 1
     total_number_of_bigrams+=1
 
-count = 0
-for key in counts_of_bigram:
-    print (key + str(counts_of_bigram[key]))
-    count+=1
-    if count == 20:
-        break
+# count = 0
+# for key in counts_of_bigram:
+#     print (key + str(counts_of_bigram[key]))
+#     count+=1
+#     if count == 20:
+#         break
 
 ########################## implementing this formula
 # count(prevword,currentword)/sum(count(prevword,ANYWORDAFTERIT))
@@ -160,24 +161,97 @@ for i in range(len(tokenized_training_unk_splitted)-1):
     numerator = counts_of_bigram[bigram_key]
     denom = count_of_words[tokenized_training_unk_splitted[i]]
     numerator+=1
-    denom += 83045#which is the number of unique words in the training set 
+    denom += total_number_of_unique_words_in_training#which is the number of unique words in the training set 
     bigram_model_maximum_smoothing[bigram_key] = numerator/denom
 
 
 
-count = 0
-for key in bigram_model_maximum:
-    print ('bigram model without smoothing:' + key + ' ' + str(bigram_model_maximum[key]))
-    count+=1
-    if count == 20:
-        break
+# count = 0
+# for key in bigram_model_maximum:
+#     print ('bigram model without smoothing:' + key + ' ' + str(bigram_model_maximum[key]))
+#     count+=1
+#     if count == 20:
+#         break
 
-count = 0
-for key in bigram_model_maximum_smoothing:
-    print ('with smoothing' + key + ' ' + str(bigram_model_maximum_smoothing[key]))
-    count+=1
-    if count == 20:
-        break
+# count = 0
+# for key in bigram_model_maximum_smoothing:
+#     print ('with smoothing' + key + ' ' + str(bigram_model_maximum_smoothing[key]))
+#     count+=1
+#     if count == 20:
+#         break
+
+
+#What percentage of bigrams (bigram types and bigram tokens) in the test corpus did not occur in
+# training (treat <unk> as a regular token that has been observed).
+test_text_splitted = unk_replaced_test.split()
+bigram_types_test = {}
+number_of_bigram_tokens_not_in_training = 0
+total_bigrams_in_test = 0
+for i in range(len(test_text_splitted)-1):
+    bigram_test_key = test_text_splitted[i] + "," + test_text_splitted[i+1]
+    # print(bigram_test_key)
+    if bigram_types_test.get(bigram_test_key) == None:
+        bigram_types_test[bigram_test_key] = 1
+    else:
+        bigram_types_test[bigram_test_key]+=1
+    if counts_of_bigram.get(bigram_test_key) == None:
+        number_of_bigram_tokens_not_in_training+=1
+    total_bigrams_in_test+=1
+print(number_of_bigram_tokens_not_in_training)
+print(total_bigrams_in_test)
+print("the percentage of bigram tokens that appeared in the test but didn't appear in the training are" + \
+    str(number_of_bigram_tokens_not_in_training/total_bigrams_in_test))
+#### for the bigram types so im using the bigram types test dictionary since it has all the unique types
+bigram_test_types_that_didnt_occur_in_training=0
+for k,v in bigram_types_test.items():
+    if k not in counts_of_bigram:#counts of bigram is for the training set.
+        bigram_test_types_that_didnt_occur_in_training+=1
+total_unique_bigrams_in_test = len(bigram_types_test)
+print("the percentage of bigram types that appeared in the test but didn't appear in the training are" + \
+    str(bigram_test_types_that_didnt_occur_in_training/total_unique_bigrams_in_test))
+print(bigram_test_types_that_didnt_occur_in_training)
+print(total_unique_bigrams_in_test)
+    
+#####for unigram maximum likelihood estimation:
+#parameters needed: unigram_model are each word so i, look, forward, to, hearing, your , reply , and . 
+print("The parameters needed for unigram model predication are each word so i, look, forward, to, hearing, your , reply , and . " )
+
+
+sentence_to_predict = "I look forward to hearing your reply ."
+sentence_to_predict = sentence_to_predict.lower()
+sentence_tokenized = sentence_to_predict.split()
+uni_probability=1
+calculations=""
+parameters_0 = []
+for word in sentence_tokenized:
+    if unigram_model.get(word) != None:
+        uni_probability*=unigram_model[word]
+        calculations+=str(unigram_model[word]) + ' * '
+    else:
+        parameters_0.append(word)
+print(calculations + ' = log(' +str(uni_probability) + ")")
+print("the log probabilty based on the unigram model is: " + str(math.log(uni_probability,2)))
+print("the parameters with 0 probability are below:")
+print(parameters_0)
+
+
+###log probability for bigram model
+print("The parameters needed for bigram model predication are each bigram so i look, look forward, forward to, to hearing, hearing your , your reply , reply and, and . " )
+parameters_1=[]
+bigram_probability=1
+for i in range(len(sentence_tokenized)-1):
+    bigram = sentence_tokenized[i] + "," + sentence_tokenized[i+1]
+    if bigram_model_maximum.get(bigram) != None:
+        bigram_probability*=bigram_model_maximum[bigram]
+        calculations+=str(bigram_model_maximum[bigram]) + ' * '
+    else:
+        parameters_1.append(bigram)
+print(calculations + ' = log(' +str(bigram_probability) + ")")
+print("the log probabilty based on the unigram model is: " + str(math.log(bigram_probability,2)))
+print("the parameters for bigram with 0 probability are below:")
+print(parameters_0)
+
+
 
 
 
