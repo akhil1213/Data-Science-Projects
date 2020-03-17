@@ -224,6 +224,7 @@ uni_probability=1
 calculations=""
 parameters_0 = []
 ##log probability for unigram model
+
 for word in sentence_tokenized:
     if unigram_model.get(word) != None:
         uni_probability*=unigram_model[word]
@@ -268,8 +269,23 @@ print("the log probabilty based on the bigram add one smoothing model is: " + st
 print("the parameters for bigram with add one smoothing with 0 probability are below:")
 print(parameters_0)
 
+#lower perplexity corresponds to a better fit of the model
+perplexity_sentence_uni = 0
+for word in sentence_tokenized:
+    if unigram_model.get(word) != None:
+        perplexity_sentence_uni += math.log(unigram_model[word],2)
+perplexity_sentence_uni/=len(sentence_tokenized)
+print(perplexity_sentence_uni)
 
+perplexity_sentence_bigram = 0
+for i in range(len(sentence_tokenized)-1):
+    bigram = sentence_tokenized[i] + "," + sentence_tokenized[i+1]
+    if bigram_model_maximum.get(bigram) != None:
+        perplexity_sentence_bigram+=bigram_model_maximum[bigram]
+perplexity_sentence_bigram/=(len(sentence_tokenized)-1)
+print(perplexity_sentence_bigram)
 
+print("I notice that the perplexity of the sentence under the bigram model is significantly smaller then the perplexity of the sentence under the unigram model")
 
 
 
