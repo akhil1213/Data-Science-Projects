@@ -275,7 +275,7 @@ for word in sentence_tokenized:
     if unigram_model.get(word) != None:
         perplexity_sentence_uni += math.log(unigram_model[word],2)
 perplexity_sentence_uni/=len(sentence_tokenized)
-print(perplexity_sentence_uni)
+print("perplexity of the sentence under unigram model is:" + str(perplexity_sentence_uni))
 
 perplexity_sentence_bigram = 0
 for i in range(len(sentence_tokenized)-1):
@@ -283,9 +283,45 @@ for i in range(len(sentence_tokenized)-1):
     if bigram_model_maximum.get(bigram) != None:
         perplexity_sentence_bigram+=bigram_model_maximum[bigram]
 perplexity_sentence_bigram/=(len(sentence_tokenized)-1)
-print(perplexity_sentence_bigram)
+print("perplexity of the sentence under bigram model is:" + str(perplexity_sentence_bigram))
 
 print("I notice that the perplexity of the sentence under the bigram model is significantly smaller then the perplexity of the sentence under the unigram model")
+
+perplexity_sentence_bigram_smooth = 0
+for i in range(len(sentence_tokenized)-1):
+    bigram = sentence_tokenized[i] + "," + sentence_tokenized[i+1]
+    if bigram_model_maximum_smoothing.get(bigram) != None:
+        perplexity_sentence_bigram_smooth+=bigram_model_maximum_smoothing[bigram]
+perplexity_sentence_bigram/=(len(sentence_tokenized)-1)
+print("perplexity of the sentence under bigram model is:" + str(perplexity_sentence_bigram_smooth))
+
+perplexity_test_uni=0
+for word in test_text_splitted:
+    if unigram_model.get(word) != None and unigram_model.get(word) != 0.0:
+        # print(unigram_model[word])
+        perplexity_test_uni += math.log(unigram_model[word],2)
+print(len(test_text_splitted))
+perplexity_sentence_uni/=len(test_text_splitted)
+print("The perplexity of the test set under the unigram model is: " + str(perplexity_sentence_uni))
+print("the probability is higher for the perplexity of the test set then the perplexity of the sentence because there are much more words in the test set then the sentence.")
+
+
+perplexity_test_bigram = 0
+for i in range(len(test_text_splitted)-1):
+    bigram = test_text_splitted[i] + "," + test_text_splitted[i+1]
+    if bigram_model_maximum.get(bigram) != None and bigram_model_maximum.get(bigram) != 0.0:
+        #can't get the log of 0, its undefined
+        perplexity_test_bigram+=bigram_model_maximum[bigram]
+perplexity_test_bigram/=(len(test_text_splitted)-1)
+print("The perplexity of the test set under the bigram model is: " + str(perplexity_test_bigram))
+
+perplexity_test_bigram_smooth = 0
+for i in range(len(test_text_splitted)-1):
+    bigram = test_text_splitted[i] + "," + test_text_splitted[i+1]
+    if bigram_model_maximum_smoothing.get(bigram) != None and bigram_model_maximum_smoothing.get(bigram) != 0.0 :
+        perplexity_test_bigram_smooth+=bigram_model_maximum_smoothing[bigram]
+perplexity_test_bigram_smooth/=(len(test_text_splitted)-1)
+print("perplexity of the test set under bigram model smoothing is:" + str(perplexity_test_bigram_smooth) )
 
 
 
