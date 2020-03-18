@@ -87,7 +87,17 @@ trained_text_splitted = trained_text_padded.split()
 unk_replaced_test = ""#testing set with unk
 total_number_of_words = 0
 total_number_of_unks = 0
+
+unique_words_in_test_set={}
+unique_unks = 0
 for word in test_text_splitted:
+    if unique_words_in_test_set.get(word)==None:
+        unique_words_in_test_set[word] = 1
+        if word not in trained_text_splitted:
+            unique_unks+=1
+    else:
+        unique_words_in_test_set[word]+=1
+
     total_number_of_words+=1
     # if word[0:3] == '<s>':
     #     word = word[3:]
@@ -100,11 +110,15 @@ for word in test_text_splitted:
         continue
     unk_replaced_test += word + " "
 # print(unk_replaced_test)
-print("total number of words in test set is: " + str(total_number_of_words))
-print("total number of unks in test set is: " + str(total_number_of_unks))
-print("the percentage of word tokens and word types in the test corpus that did not occur in training is" + 
+print("total number of word types in test set is" + str(len(unique_words_in_test_set)))
+print("total number of unique word types that become unks in test set are" + str(unique_unks))
+print("the percentage of word tokens in the test corpus that did not occur in training is" + 
+      str((unique_unks/len(unique_words_in_test_set))*100) + '%')
+print(len(unique_words_in_test_set))
+print("total number of word tokens in test set is: " + str(total_number_of_words))
+print("total number of word tokens that become unks in test set is: " + str(total_number_of_unks))
+print("the percentage of word tokens in the test corpus that did not occur in training is" + 
       str((total_number_of_unks/total_number_of_words)*100) + '%')
-
       ################ unigram omdels
 
 unigram_model = {}
