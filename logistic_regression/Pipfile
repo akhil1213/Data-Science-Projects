@@ -10,6 +10,9 @@ pandas = "*"
 numpy = "*"
 seaborn = "*"
 matplotlib = "*"
+tensorflow = "*"
+scikitlearn = "*"
+sklearn = "*"
 
 [requires]
 python_version = "3.8"
